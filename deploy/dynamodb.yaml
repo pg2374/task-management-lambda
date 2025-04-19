@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "DynamoDB table for Task Management"
+
+Resources:
+  TaskTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Tasks
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: deadline
+          AttributeType: S
+        - AttributeName: assignee
+          AttributeType: S
+        - AttributeName: status
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        - AttributeName: deadline
+          KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+      StreamSpecification:
+        StreamViewType: NEW_IMAGE
+      GlobalSecondaryIndexes:
+        - IndexName: DeadlineIndex
+          KeySchema:
+            - AttributeName: deadline
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+        - IndexName: AssigneeIndex
+          KeySchema:
+            - AttributeName: assignee
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+        - IndexName: StatusIndex
+          KeySchema:
+            - AttributeName: status
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
+Outputs:
+  TaskTableName:
+    Description: "DynamoDB Table Name"
+    Value: !Ref TaskTable
